@@ -6,12 +6,12 @@
         <Parameter name="verify mesh" type="bool" value="false" />
       </ParameterList>
       <ParameterList name="surface parameters" type="ParameterList">
-        <Parameter name="surface sideset name" type="string" value="surface face" />
+        <Parameter name="surface sideset name" type="string" value="surface" />
       </ParameterList>
     </ParameterList>
     <ParameterList name="domain" type="ParameterList">
       <Parameter name="mesh type" type="string" value="read mesh file" />
-      <Parameter name="build columns from set" type="string" value="surface face" />
+      <Parameter name="build columns from set" type="string" value="surface" />
       <ParameterList name="read mesh file parameters" type="ParameterList">
         <Parameter name="file" type="string" value="../data/endalen_3D_pf.exo" />
         <Parameter name="format" type="string" value="Exodus II" />
@@ -42,7 +42,7 @@
         <Parameter name="entity" type="string" value="cell" />
       </ParameterList>
     </ParameterList>
-    <ParameterList name="surface face" type="ParameterList">
+    <ParameterList name="surface" type="ParameterList">
       <ParameterList name="region: labeled set" type="ParameterList">
         <Parameter name="label" type="string" value="2" />
         <Parameter name="file" type="string" value="../data/endalen_3D_pf.exo" />
@@ -130,48 +130,54 @@
     </ParameterList>
     <ParameterList name="PK tree" type="ParameterList">
       <ParameterList name="Top level MPC" type="ParameterList">
-        <ParameterList name="flow transport energy coupler">
-          <Parameter name="PK type" type="string" value="flow reactive transport" />
-          <ParameterList name="coupled SEB and permafrost" type="ParameterList">
-            <Parameter name="PK type" type="string" value="strong MPC" />
-            <ParameterList name="SEB" type="ParameterList">
-              <Parameter name="PK type" type="string" value="surface balance implicit subgrid" />
-            </ParameterList>
-            <ParameterList name="permafrost surface and subsurface" type="ParameterList">
-              <Parameter name="PK type" type="string" value="permafrost model" />
-              <ParameterList name="subsurface flow" type="ParameterList">
-                <Parameter name="PK type" type="string" value="permafrost flow" />
-              </ParameterList>
-              <ParameterList name="surface flow" type="ParameterList">
-                <Parameter name="PK type" type="string" value="overland flow with ice" />
-              </ParameterList>
-              <ParameterList name="subsurface energy" type="ParameterList">
-                <Parameter name="PK type" type="string" value="three-phase energy" />
-              </ParameterList>
-              <ParameterList name="surface energy" type="ParameterList">
-                <Parameter name="PK type" type="string" value="surface energy" />
-              </ParameterList>
-            </ParameterList>
+        <Parameter name="PK type" type="string" value="subcycling MPC" />
+
+        <ParameterList name="coupled SEB and permafrost" type="ParameterList">
+          <Parameter name="PK type" type="string" value="strong MPC" />
+          <ParameterList name="SEB" type="ParameterList">
+            <Parameter name="PK type" type="string" value="surface balance implicit subgrid" />
           </ParameterList>
-          <ParameterList name="surface-subsurface transport coupler" type="ParameterList">
-            <Parameter name="PK type" type="string" value="surface subsurface transport" />
-            <ParameterList name="subsurface transport" type="ParameterList">
-              <Parameter name="PK type" type="string" value="transport ATS" />
+          <ParameterList name="permafrost surface and subsurface" type="ParameterList">
+            <Parameter name="PK type" type="string" value="permafrost model" />
+            <ParameterList name="subsurface flow" type="ParameterList">
+              <Parameter name="PK type" type="string" value="permafrost flow" />
             </ParameterList>
-            <ParameterList name="surface transport" type="ParameterList">
-              <Parameter name="PK type" type="string" value="transport ATS" />
+            <ParameterList name="surface flow" type="ParameterList">
+              <Parameter name="PK type" type="string" value="overland flow with ice" />
+            </ParameterList>
+            <ParameterList name="subsurface energy" type="ParameterList">
+              <Parameter name="PK type" type="string" value="three-phase energy" />
+            </ParameterList>
+            <ParameterList name="surface energy" type="ParameterList">
+              <Parameter name="PK type" type="string" value="surface energy" />
             </ParameterList>
           </ParameterList>
         </ParameterList>
+
+        <ParameterList name="surface-subsurface transport coupler" type="ParameterList">
+          <Parameter name="PK type" type="string" value="surface subsurface transport" />
+          <ParameterList name="subsurface transport" type="ParameterList">
+            <Parameter name="PK type" type="string" value="transport ATS" />
+          </ParameterList>
+          <ParameterList name="surface transport" type="ParameterList">
+            <Parameter name="PK type" type="string" value="transport ATS" />
+          </ParameterList>
+        </ParameterList>
+
       </ParameterList>
     </ParameterList>
   </ParameterList>
   <ParameterList name="PKs" type="ParameterList">
 
     <ParameterList name="Top level MPC" type="ParameterList">
-      <Parameter name="PK type" type="string" value="flow reactive transport" />
-      <Parameter name="PK name" type="string" value="flow transport energy coupler" />
+      <Parameter name="PK type" type="string" value="subcycling MPC" />
       <Parameter name="PKs order" type="Array(string)" value="{coupled SEB and permafrost, surface-subsurface transport coupler}" />
+      <Parameter name="subcycle" type="Array(int)" value="{0,0}" />
+    </ParameterList>
+      
+    <ParameterList name="coupled SEB and permafrost" type="ParameterList">
+      <Parameter name="PK type" type="string" value="strong MPC" />
+      <Parameter name="PKs order" type="Array(string)" value="{SEB, permafrost surface and subsurface}" />
       <ParameterList name="time integrator" type="ParameterList">
         <Parameter name="extrapolate initial guess" type="bool" value="true" />
         <Parameter name="solver type" type="string" value="nka_bt_ats" />
@@ -429,7 +435,6 @@
 
     <ParameterList name="surface-subsurface transport coupler">
       <Parameter name="PK type" type="string" value="surface subsurface transport" />
-      <Parameter name="PK name" type="string" value="surface subsurface transport" />
       <Parameter name="PKs order" type="Array(string)" value="{subsurface transport, surface transport}" />
       <Parameter name="component names" type="Array(string)" value="{tracer}" />
     </ParameterList>
@@ -448,7 +453,6 @@
       <Parameter name="cfl" type="double" value=" 1" />
       <Parameter name="flow mode" type="string" value="transient" />
       <Parameter name="solver" type="string" value="PCG with Hypre AMG" />
-      <Parameter name="enable internal tests" type="string" value="no" />
       <Parameter name="transport subcycling" type="bool" value="false" />
       <Parameter name="number of aqueous components" type="int" value="1" />
       <Parameter name="number of gaseous components" type="int" value="0" />
@@ -506,7 +510,7 @@
       <Parameter name="previous saturation liquid key" type="string" value="surface-prev_unfrozen_effective_depth" />
       <Parameter name="flux key" type="string" value="surface-mass_flux" />
       <Parameter name="molar_density key" type="string" value="surface-molar_density_liquid" />
-      <Parameter name="porosity key" type="string" value="surface-fake_porosity" />
+      <Parameter name="porosity key" type="string" value="surface-one" />
       <Parameter name="component names" type="Array(string)" value="{tracer}" />
       <Parameter name="number of liquid components" type="int" value="1" />
       <Parameter name="component molar masses" type="Array(double)" value="{ 1}" />
@@ -514,7 +518,6 @@
       <Parameter name="temporal discretization order" type="int" value="1" />
       <Parameter name="cfl" type="double" value=" 1" />
       <Parameter name="solver" type="string" value="PCG with Hypre AMG" />
-      <Parameter name="enable internal tests" type="string" value="no" />
       <Parameter name="transport subcycling" type="bool" value="false" />
       <Parameter name="number of aqueous components" type="int" value="1" />
       <Parameter name="number of gaseous components" type="int" value="0" />
@@ -631,6 +634,10 @@
           <Parameter name="unfrozen rel perm cutoff pressure [Pa]" type="double" value="10" />
           <Parameter name="unfrozen rel perm cutoff pressure, below [Pa]" type="double" value="-100" />
         </ParameterList>
+      </ParameterList>
+      <ParameterList name="surface-one">
+        <Parameter name="evaluator type" type="string" value="independent variable constant" />
+        <Parameter name="value" type="double" value=" 1" />
       </ParameterList>
       <ParameterList name="molar_density_ice" type="ParameterList">
         <Parameter name="evaluator type" type="string" value="eos" />
